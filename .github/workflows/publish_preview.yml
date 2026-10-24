@@ -1,0 +1,95 @@
+name: Publish Chamfer3D Windows preview
+
+on:
+  workflow_run:
+    workflows: [Build Chamfer3D Windows preview]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: Successful Windows preview build run ID
+        required: true
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: publish-preview-${{ inputs.run_id || github.event.workflow_run.id }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      actions: read
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      REPOSITORY_ID: ${{ github.repository_id }}
+      RUN_ID: ${{ inputs.run_id || github.event.workflow_run.id }}
+    steps:
+      # Do not check out or run code from the triggering build. Only validated
+      # builds from this repository's master branch may publish an artifact.
+      - name: Validate the source build
+        shell: bash
+        run: |
+          [[ "$RUN_ID" =~ ^[0-9]+$ ]]
+          gh api "repos/$GH_REPO/actions/runs/$RUN_ID" > build-run.json
+          workflow_id=$(gh api "repos/$GH_REPO/actions/workflows/build_all.yml" --jq .id)
+          jq -e --arg repository_id "$REPOSITORY_ID" --arg workflow_id "$workflow_id" '
+            .head_repository.id == ($repository_id | tonumber) and
+            .workflow_id == ($workflow_id | tonumber) and
+            .head_branch == "master" and
+            (.event == "push" or .event == "workflow_dispatch") and
+            .status == "completed" and .conclusion == "success"
+          ' build-run.json
+          source_sha=$(jq -r .head_sha build-run.json)
+          run_number=$(jq -r .run_number build-run.json)
+          [[ "$source_sha" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$run_number" =~ ^[0-9]+$ ]]
+          echo "SOURCE_SHA=$source_sha" >> "$GITHUB_ENV"
+          echo "PREVIEW_TAG=v0.1.0-preview.$run_number" >> "$GITHUB_ENV"
+
+      - name: Download the Windows app package
+        shell: bash
+        run: |
+          gh run download "$RUN_ID" --repo "$GH_REPO" --name Chamfer3D-Slicer-Windows-x64-preview --dir package
+          test -s package/Chamfer3D-Slicer-Windows-x64-preview.zip
+
+      - name: Publish the preview download
+        working-directory: package
+        shell: bash
+        run: |
+          sha256sum Chamfer3D-Slicer-Windows-x64-preview.zip > Chamfer3D-Slicer-Windows-x64-preview.zip.sha256
+          cat > release-notes.md <<'EOF'
+          First Windows x64 preview of **Chamfer3D Slicer**, based on Bambu Studio.
+
+          ### Open the app
+
+          1. Download `Chamfer3D-Slicer-Windows-x64-preview.zip` from the assets below.
+          2. Extract the entire ZIP.
+          3. Open `install-dir/chamfer3d-slicer.exe`.
+
+          Keep the executable, DLLs, and resources together. This is a portable preview.
+
+          This build adds the Chamfer3D application name, Windows executable name,
+          and a separate `Chamfer3DSlicer` settings directory. Much of the interface,
+          artwork, profiles, and functionality remains inherited from Bambu Studio.
+
+          Compilation and CLI startup must pass before this release is published.
+          GUI and printer workflows still require testing for this fork.
+          The upstream engine version remains `02.08.04.57` in this preview.
+
+          License: GNU Affero General Public License, version 3. See the included
+          `LICENSE` and upstream acknowledgements.
+          EOF
+          printf '\nSource: https://github.com/%s/tree/%s\n\nBuild: https://github.com/%s/actions/runs/%s\n' "$GH_REPO" "$SOURCE_SHA" "$GH_REPO" "$RUN_ID" >> release-notes.md
+          gh release create "$PREVIEW_TAG" \
+            Chamfer3D-Slicer-Windows-x64-preview.zip \
+            Chamfer3D-Slicer-Windows-x64-preview.zip.sha256 \
+            --repo "$GH_REPO" --target "$SOURCE_SHA" --prerelease \
+            --title "Chamfer3D Slicer - Windows preview $PREVIEW_TAG" \
+            --notes-file release-notes.md

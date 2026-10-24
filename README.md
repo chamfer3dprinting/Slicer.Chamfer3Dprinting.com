@@ -10,7 +10,7 @@ This public Bambu Studio fork now has the Chamfer3D application name, a separate
 
 ## Windows preview download
 
-Published previews will appear on the [Releases page](https://github.com/chamfer3dprinting/Slicer.Chamfer3Dprinting.com/releases). A successful [Windows preview build](https://github.com/chamfer3dprinting/Slicer.Chamfer3Dprinting.com/actions/workflows/build_all.yml) also provides the `Chamfer3D-Slicer-Windows-x64-preview` artifact. Failed or running builds do not provide a ready app.
+Successful Windows builds from this repository's `master` branch are automatically published as previews on the [Releases page](https://github.com/chamfer3dprinting/Slicer.Chamfer3Dprinting.com/releases), with the source revision and a SHA-256 checksum. A successful [Windows preview build](https://github.com/chamfer3dprinting/Slicer.Chamfer3Dprinting.com/actions/workflows/build_all.yml) also provides the `Chamfer3D-Slicer-Windows-x64-preview` artifact. Failed or running builds do not provide a ready app.
 
 Download the portable ZIP, extract the entire contents, and open `install-dir/chamfer3d-slicer.exe`. Keep the executable, DLLs, and resources together. The build checks CLI startup; the preview still needs GUI and printer workflow testing.
 
