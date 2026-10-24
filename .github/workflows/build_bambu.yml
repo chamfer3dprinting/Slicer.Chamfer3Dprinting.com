@@ -16,8 +16,9 @@ on:
 
 jobs:
   build_bambu:
-    name: Build BambuStudio
+    name: Build Chamfer3D Slicer
     runs-on: ${{ inputs.os }}
+    timeout-minutes: 90
     env:
       date:
       ver:
@@ -128,9 +129,13 @@ jobs:
         if: inputs.os == 'windows-latest'
         working-directory: ${{ github.workspace }}
         run: |
+          $sdkRoot = "C:/Program Files (x86)/Windows Kits/10/Include"
+          $sdk = (Get-ChildItem $sdkRoot -Directory | Where-Object { $_.Name -match '^10\.' } | Sort-Object { [version]$_.Name } -Descending | Select-Object -First 1).FullName
+          if (-not $sdk) { throw "No Windows 10/11 SDK found" }
           mkdir build
           cd build
-          cmake .. -G "Visual Studio 18 2026" -A X64 -DBBL_RELEASE_TO_PUBLIC=1 -DBBL_INTERNAL_TESTING=0 -DCMAKE_PREFIX_PATH="${{ github.workspace }}\deps\build\BambuStudio_dep\usr\local" -DCMAKE_INSTALL_PREFIX="../install-dir" -DCMAKE_BUILD_TYPE=Release -DWIN10SDK_PATH="C:/Program Files (x86)/Windows Kits/10/Include/10.0.22000.0"
+          cmake .. -G "Visual Studio 18 2026" -A X64 -DBBL_RELEASE_TO_PUBLIC=1 -DBBL_INTERNAL_TESTING=0 -DCMAKE_PREFIX_PATH="${{ github.workspace }}\deps\build\BambuStudio_dep\usr\local" -DCMAKE_INSTALL_PREFIX="../install-dir" -DCMAKE_BUILD_TYPE=Release -DWIN10SDK_PATH="$sdk"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cmake --build . --target install --config Release -- -m
 
       # Windows on ARM64/ARM64EC: VS 2022 generator (the arm runner has no VS
@@ -158,11 +163,37 @@ jobs:
       #   run: |
       #     cpack -G NSIS
 
+      - name: Verify Windows entry point and add source information
+        if: inputs.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $exe = Join-Path $PWD 'install-dir/chamfer3d-slicer.exe'
+          if (-not (Test-Path $exe)) { throw "Chamfer3D executable was not installed" }
+          $process = Start-Process -FilePath $exe -ArgumentList '--help' -PassThru -Wait -WindowStyle Hidden -RedirectStandardOutput cli-help.txt -RedirectStandardError cli-errors.txt
+          Get-Content cli-help.txt
+          Get-Content cli-errors.txt
+          if ($process.ExitCode -ne 0) { throw "CLI startup failed: $($process.ExitCode)" }
+          Copy-Item LICENSE, README.upstream.md install-dir/
+          @"
+          Chamfer3D Slicer - Windows x64 preview
+
+          Extract this whole folder, then open chamfer3d-slicer.exe.
+          Keep the executable, DLLs, and resources together.
+
+          Source: https://github.com/${{ github.repository }}/tree/${{ github.sha }}
+          Commit: ${{ github.sha }}
+          License: GNU Affero General Public License, version 3 (see LICENSE).
+
+          This early fork retains upstream interface artwork and components.
+          It uses the Chamfer3DSlicer settings directory.
+          CLI startup is checked by the build; GUI and printer workflows still require testing.
+          "@ | Set-Content install-dir/START-HERE.txt
+
       - name: Pack app
         if: inputs.os == 'windows-latest'
         working-directory: ${{ github.workspace }}
         shell: cmd
-        run: '"C:/Program Files/7-Zip/7z.exe" a -tzip BambuStudio_Windows_${{ env.ver }}_portable.zip ${{ github.workspace }}/install-dir'
+        run: '"C:/Program Files/7-Zip/7z.exe" a -tzip Chamfer3D-Slicer-Windows-x64-preview.zip ${{ github.workspace }}/install-dir'
 
       - name: Pack app ARM64
         if: inputs.os == 'windows-11-arm'
@@ -180,8 +211,9 @@ jobs:
         if: inputs.os == 'windows-latest'
         uses: actions/upload-artifact@v6
         with:
-          name: BambuStudio_Windows_${{ env.ver }}_portable
-          path: ${{ github.workspace }}/BambuStudio_Windows_${{ env.ver }}_portable.zip
+          name: Chamfer3D-Slicer-Windows-x64-preview
+          path: ${{ github.workspace }}/Chamfer3D-Slicer-Windows-x64-preview.zip
+          if-no-files-found: error
 
       - name: Upload artifacts Win ARM64 zip
         if: inputs.os == 'windows-11-arm'

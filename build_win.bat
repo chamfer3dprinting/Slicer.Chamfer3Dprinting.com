@@ -33,7 +33,7 @@
 @ECHO                  ide - open project in Visual Studio if not open (no wait)
 @ECHO                  none - run step does nothing
 @ECHO                  viewer - run bambu-gcodeviewer.exe (no wait)
-@ECHO                  window - run bambu-studio.exe (no wait)
+@ECHO                  window - run chamfer3d-slicer.exe (no wait)
 @ECHO                Default: none
 @ECHO  -d -DESTDIR   Deps destination directory
 @ECHO                Warning: Changing destdir path will not delete the old destdir.
@@ -254,8 +254,8 @@ IF "%PS_RUN%" EQU "console" (
     icacls bambu-studio-console.exe >nul || GOTO :END
     start /wait /b bambu-studio-console.exe
 ) ELSE IF "%PS_RUN%" EQU "window" (
-    icacls bambu-studio.exe >nul || GOTO :END
-    start bambu-studio.exe
+    icacls chamfer3d-slicer.exe >nul || GOTO :END
+    start chamfer3d-slicer.exe
 ) ELSE IF "%PS_RUN%" EQU "viewer" (
     icacls bambu-gcodeviewer.exe >nul || GOTO :END
     start bambu-gcodeviewer.exe

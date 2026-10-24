@@ -6,7 +6,13 @@ The goal is a Chamfer3D printing workflow: prepare models, choose printer and fi
 
 ## Project status
 
-The repository is initialized as a public Bambu Studio fork. Application code, interface, profiles, and build scripts currently come from upstream. Chamfer3D application branding, an independently verified build, and a Chamfer3D installer are planned.
+This public Bambu Studio fork now has the Chamfer3D application name, a separate settings key, a Windows executable named `chamfer3d-slicer.exe`, and a Windows preview build workflow. Much of the interface, artwork, profiles, and functionality still comes from upstream. GUI and printer workflow verification, further branding, and an installer remain planned.
+
+## Windows preview download
+
+Published previews will appear on the [Releases page](https://github.com/chamfer3dprinting/Slicer.Chamfer3Dprinting.com/releases). A successful [Windows preview build](https://github.com/chamfer3dprinting/Slicer.Chamfer3Dprinting.com/actions/workflows/build_all.yml) also provides the `Chamfer3D-Slicer-Windows-x64-preview` artifact. Failed or running builds do not provide a ready app.
+
+Download the portable ZIP, extract the entire contents, and open `install-dir/chamfer3d-slicer.exe`. Keep the executable, DLLs, and resources together. The build checks CLI startup; the preview still needs GUI and printer workflow testing.
 
 The repository name is the intended project identity. A website at that address has not been deployed.
 

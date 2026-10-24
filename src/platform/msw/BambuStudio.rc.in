@@ -6,14 +6,14 @@ PRODUCTVERSION @SLIC3R_COMMA_SEPARATED_VERSION@
  {
   BLOCK "040904E4"
   {
-   VALUE "CompanyName", "Bambu Research"
+   VALUE "CompanyName", "Chamfer3Dprinting"
    VALUE "FileDescription", "@SLIC3R_APP_NAME@"
    VALUE "FileVersion", "@SLIC3R_VERSION@"
    VALUE "ProductName", "@SLIC3R_APP_NAME@"
    VALUE "ProductVersion", "@SLIC3R_BUILD_ID@"
    VALUE "InternalName", "@SLIC3R_APP_NAME@"
    VALUE "LegalCopyright", "Copyright(C) 2021-2025 Lunkuo All Rights Reserved"
-   VALUE "OriginalFilename", "bambu-studio.exe"
+   VALUE "OriginalFilename", "chamfer3d-slicer.exe"
   }
  }
  BLOCK "VarFileInfo"
