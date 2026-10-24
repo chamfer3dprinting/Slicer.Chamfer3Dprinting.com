@@ -1,53 +1,34 @@
-![image](https://user-images.githubusercontent.com/106916061/179006347-497d24c0-9bd6-45b7-8c49-d5cc8ecfe5d7.png)
-# BambuStudio
-Bambu Studio is a cutting-edge, feature-rich slicing software.  
-It contains project-based workflows, systematically optimized slicing algorithms, and an easy-to-use graphic interface, bringing users an incredibly smooth printing experience.
+# Slicer.Chamfer3Dprinting.com
 
-Prebuilt Windows, macOS 64-bit and Linux releases are available through the [github releases page](https://github.com/bambulab/BambuStudio/releases/).
+**Chamfer3D Slicer** is a desktop 3D printing slicer project maintained by [Chamfer3Dprinting](https://github.com/chamfer3dprinting), starting from [Bambu Studio](https://github.com/bambulab/BambuStudio).
 
-Bambu Studio is based on [PrusaSlicer](https://github.com/prusa3d/PrusaSlicer) by Prusa Research, which is from [Slic3r](https://github.com/Slic3r/Slic3r) by Alessandro Ranellucci and the RepRap community.
+The goal is a Chamfer3D printing workflow: prepare models, choose printer and filament settings, generate toolpaths, preview layers, and export a print file.
 
-See the [wiki](https://github.com/bambulab/BambuStudio/wiki) and the [documentation directory](https://github.com/bambulab/BambuStudio/tree/master/doc) for more information.
+## Project status
 
-# What are Bambu Studio's main features?
-Key features are:
-- Basic slicing features & GCode viewer
-- Multiple plates management
-- Remote control & monitoring
-- Auto-arrange objects
-- Auto-orient objects
-- Hybrid/Tree/Normal support types, Customized support
-- multi-material printing and rich painting tools
-- multi-platform (Win/Mac/Linux) support
-- Global/Object/Part level slicing parameters
+The repository is initialized as a public Bambu Studio fork. Application code, interface, profiles, and build scripts currently come from upstream. Chamfer3D application branding, an independently verified build, and a Chamfer3D installer are planned.
 
-Other major features are:
-- Advanced cooling logic controlling fan speed and dynamic print speed
-- Auto brim according to mechanical analysis
-- Support arc path(G2/G3)
-- Support STEP format
-- Assembly & explosion view
-- Flushing transition-filament into infill/object during filament change
+The repository name is the intended project identity. A website at that address has not been deployed.
 
-# How to compile
-Following platforms are currently supported to compile:
-- Windows 64-bit, [Compile Guide](https://github.com/bambulab/BambuStudio/wiki/Windows-Compile-Guide)
-- Mac 64-bit, [Compile Guide](https://github.com/bambulab/BambuStudio/wiki/Mac-Compile-Guide)
-- Linux, [Compile Guide](https://github.com/bambulab/BambuStudio/wiki/Linux-Compile-Guide)
-  - currently we only provide linux appimages on [github releases](https://github.com/bambulab/BambuStudio/releases) for Ubuntu/Fedora, and a [flathub version](https://flathub.org/apps/com.bambulab.BambuStudio) can be used for all the linux platforms
+## Start here
 
-# Report issue
-You can add an issue to the [github tracker](https://github.com/bambulab/BambuStudio/issues) if **it isn't already present.**
+- [Development guide](DEVELOPMENT.md): source checkout, build references, and verification.
+- [Roadmap](ROADMAP.md): milestones for the first Chamfer3D release.
+- [Issues](https://github.com/chamfer3dprinting/Slicer.Chamfer3Dprinting.com/issues): development tasks and feedback.
+- [Original upstream README](README.upstream.md): Bambu Studio documentation and acknowledgements.
 
-# License
-Bambu Studio is licensed under the GNU Affero General Public License, version 3. Bambu Studio is based on PrusaSlicer by PrusaResearch.
+## Foundation
 
-PrusaSlicer is licensed under the GNU Affero General Public License, version 3. PrusaSlicer is owned by Prusa Research. PrusaSlicer is originally based on Slic3r by Alessandro Ranellucci.
+The inherited Bambu Studio codebase includes model preparation, slicing, G-code preview, multiple plates, supports, and printer/filament/process profiles. It uses native C++ and CMake, with upstream build guides for Windows, macOS, and Linux.
 
-Slic3r is licensed under the GNU Affero General Public License, version 3. Slic3r was created by Alessandro Ranellucci with the help of many other contributors.
+The first development milestone targets Windows. Printer support and networking behavior must be verified for Chamfer3D releases; repository creation alone does not establish compatibility.
 
-The GNU Affero General Public License, version 3 ensures that if you use any part of this software in any way (even behind a web server), your software must be released under the same license.
+## License and credits
 
-The bambu networking plugin is based on non-free libraries. It is optional to the Bambu Studio and provides extended networking functionalities for users.
-By default, after installing Bambu Studio without the networking plugin, you can initiate printing through the SD card after slicing is completed.
+This fork retains the [GNU Affero General Public License, version 3](LICENSE), and upstream copyright and attribution notices.
 
+Bambu Studio is based on [PrusaSlicer](https://github.com/prusa3d/PrusaSlicer), which derives from [Slic3r](https://github.com/Slic3r/Slic3r). Their authors and contributors provide the foundation for this project.
+
+The optional Bambu networking plugin is described separately in the [upstream README](README.upstream.md#license); it is not a Chamfer3D-owned component.
+
+Chamfer3D Slicer is an independent project and is not an official Bambu Lab product.
